@@ -34,6 +34,7 @@ $temp_out = $parser->tempFile("_prs.tsv");
 $results = array();
 foreach ($in as $vcf) 
 {
+	//TODO: adapt for GRCh38
 	$results[basename($vcf, ".vcf")] = array();
 }
 
@@ -57,8 +58,11 @@ for ($row_idx=0; $row_idx < $sample_sheet->rows(); $row_idx++)
 
 	foreach($stdout as $line)
 	{
-		$split_line = explode(":\t", $line);
-		$results[trim($split_line[0])][$name] = trim($split_line[1]);
+		$pgs_id = trim(explode(":", $line)[0]);
+		$prs_score = trim(explode("=", explode(" ", explode(":", $line)[1])[2])[1]);
+		$prs_percentile = trim(explode("=", explode(" ", explode(":", $line)[1])[3])[1]);
+		print $pgs_id.": ".$prs_score." (".$prs_percentile.")\n";
+		$results[$pgs_id][$name] = array($prs_score, $prs_percentile);
 	}
 }
 
@@ -72,7 +76,7 @@ fwrite($out_h, "#pgs_id\tsample_count\t".implode("\t", $range)."\n");
 if ($write_sample_output)
 {
 	$out2_h = fopen2($out2, "w");
-	fwrite($out2_h, "#pgs_id\tsample\tscore\n");
+	fwrite($out2_h, "#pgs_id\tsample\tscore\tpercentile\n");
 }
 
 foreach ($results as $pgs_id => $prs_values) 
@@ -80,13 +84,17 @@ foreach ($results as $pgs_id => $prs_values)
 	// write scores for each sample to file
 	if ($write_sample_output)
 	{
-		foreach ($prs_values as $sample => $score) 
+		foreach ($prs_values as $sample => $values) 
 		{
-			fwrite($out2_h, "$pgs_id\t$sample\t$score\n");
+			fwrite($out2_h, "$pgs_id\t$sample\t".$values[0]."\t".$values[1]."\n");
 		}
 	}
-	
-	$prs_scores = array_values($prs_values);
+	$prs_scores = array();
+	foreach ($prs_values as $sample => $values) 
+	{
+		$prs_scores[] = $values[0];
+	}
+
 	if (!sort($prs_scores, SORT_NUMERIC))
 	{
 		trigger_error("Error sorting PRS scores for '$pgs_id'!", E_USER_ERROR);
