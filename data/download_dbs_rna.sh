@@ -19,13 +19,6 @@ wget https://www.proteinatlas.org/download/rna_tissue_hpa.tsv.zip
 unzip -o rna_tissue_hpa.tsv.zip
 rm rna_tissue_hpa.tsv.zip
 
-#download Ensembl data
-cd $data_folder
-mkdir -p dbs/gene_annotations
-wget -O - 'ftp://ftp.ensembl.org/pub/grch37/current/gtf/homo_sapiens/Homo_sapiens.GRCh37.87.chr_patch_hapl_scaff.gtf.gz' | \
-  gzip -cd | \
-  awk '{ if ($1 !~ /^#/) { print "chr"$0 } else { print $0 } }' > dbs/gene_annotations/GRCh37.gtf
-
 #STAR: index genome
 cd $data_folder
 mkdir -p genomes/STAR/GRCh37

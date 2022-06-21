@@ -161,6 +161,11 @@ cd MMSplice
 wget https://download.imgag.de/ahsturm1/mmsplice_scores_2021_02_03.vcf.gz -O mmsplice_scores_2021_02_03.vcf.gz
 tabix -p vcf mmsplice_scores_2021_02_03.vcf.gz
 
+#download Ensembl data
+cd $dbs
+mkdir -p gene_annotations
+wget -O - 'ftp://ftp.ensembl.org/pub/grch37/current/gtf/homo_sapiens/Homo_sapiens.GRCh37.87.chr_patch_hapl_scaff.gtf.gz' | gzip -cd | awk '{ if ($1 !~ /^#/) { print "chr"$0 } else { print $0 } }' > gene_annotations/GRCh37.gtf
+
 #install OMIM (you might need a license, , only possible after ngs-bits is installed - including reference genome and NGSD setup)
 #cd $dbs
 #mkdir OMIM
