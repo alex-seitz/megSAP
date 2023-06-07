@@ -43,6 +43,7 @@ $parser->addFloat("min_depth_t", "Tumor sample coverage cut-off for low coverage
 $parser->addFloat("min_depth_n", "Normal sample coverage cut-off for low coverage statistics.", true, 60);
 $parser->addInt("min_cov_files", "Minimum number of required tumor-normal pairs for CNV calling.", true, 7);
 $parser->addString("cnv_baseline_pos","baseline region for ClinCNV, format e.g. chr1:12-12532",true);
+$parser->addFlag("cnv_include_ffpe", "Include FFPE samples as reference samples for ClinCNV");
 $parser->addString("rna_ref_tissue", "Reference data for RNA annotation", true);
 $parser->addInt("threads", "The maximum number of threads to use.", true, 4);
 extract($parser->parse($argv));
@@ -644,7 +645,7 @@ if(in_array("cn",$steps))
 		}
 		
 		// copy normal sample coverage file to reference folder (only if valid and not yet there).
-		if (db_is_enabled("NGSD") && is_valid_ref_sample_for_cnv_analysis($n_id))
+		if (db_is_enabled("NGSD") && is_valid_ref_sample_for_cnv_analysis($n_id, false, false, $cnv_include_ffpe))
 		{
 			//create reference folder if it does not exist
 			
@@ -686,7 +687,7 @@ if(in_array("cn",$steps))
 		}
 		
 		//use temporary list file if n or t cov files are not valid
-		if(!db_is_enabled("NGSD") || !is_valid_ref_sample_for_cnv_analysis($n_id) || !is_valid_ref_tumor_sample_for_cnv_analysis($t_id))
+		if(!db_is_enabled("NGSD") || !is_valid_ref_sample_for_cnv_analysis($n_id, false, false, $cnv_include_ffpe) || !is_valid_ref_tumor_sample_for_cnv_analysis($t_id))
 		{
 			$tmp_file_name = $parser->tempFile(".csv");
 			$parser->copyFile($t_n_list_file,$tmp_file_name);
