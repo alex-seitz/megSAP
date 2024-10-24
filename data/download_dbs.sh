@@ -197,6 +197,8 @@ wget https://github.com/PacificBiosciences/pbsv/raw/master/annotations/human_GRC
 #The actual files should be updated on regular bases (e.g. by using a cron job).
 #Example code (generates a date based subfolder and links the generated files to the main folder):
 #cd $dbs
+#mkdir -p NGSD
+#cd NGSD
 #curdate=`date +"%Y-%m-%d"`
 #mkdir $curdate
 #cd $curdate
@@ -223,6 +225,8 @@ wget https://github.com/PacificBiosciences/pbsv/raw/master/annotations/human_GRC
 #ln -s $curdate/NGSD_somatic.vcf.gz NGSD_somatic.vcf.gz
 #ln -s $curdate/NGSD_germline.vcf.gz.tbi NGSD_germline.vcf.gz.tbi
 #ln -s $curdate/NGSD_somatic.vcf.gz.tbi NGSD_somatic.vcf.gz.tbi
+#
+#$ngsbits/NGSDExportSV -out_folder $dbs/NGSD/$curdate
 #
 #bgzip -c $curdate/sv_deletion.bedpe > $curdate/sv_deletion.bedpe.gz
 #bgzip -c $curdate/sv_duplication.bedpe > $curdate/sv_duplication.bedpe.gz
